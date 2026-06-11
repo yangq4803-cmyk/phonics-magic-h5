@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#126b72" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="拼读小五" />
+    <title>魔法自然拼读小五</title>
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="top-band" aria-label="魔法自然拼读练习">
+        <div class="top-band__shade"></div>
+        <div class="top-band__content">
+          <div>
+            <p class="eyebrow">Phonics Quest</p>
+            <h1>魔法自然拼读小五</h1>
+            <p class="subtitle">听音、拆音、拼写、闯关，把单词变成会发光的声音线索。</p>
+          </div>
+          <div class="score-board" aria-label="学习进度">
+            <span>今日星尘</span>
+            <strong id="stars">0</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="练习区">
+        <aside class="lesson-rail" aria-label="关卡">
+          <button class="lesson-tab is-active" data-lesson="short">
+            <span class="tab-mark">a</span>
+            <span>短元音</span>
+          </button>
+          <button class="lesson-tab" data-lesson="long">
+            <span class="tab-mark">ā</span>
+            <span>长元音</span>
+          </button>
+          <button class="lesson-tab" data-lesson="blend">
+            <span class="tab-mark">sh</span>
+            <span>辅音组合</span>
+          </button>
+          <button class="lesson-tab" data-lesson="team">
+            <span class="tab-mark">oa</span>
+            <span>元音搭档</span>
+          </button>
+        </aside>
+
+        <section class="practice-panel" aria-live="polite">
+          <div class="panel-head">
+            <div>
+              <p id="lessonKicker" class="kicker">短元音魔法</p>
+              <h2 id="lessonTitle">听见中间的短音</h2>
+            </div>
+            <button id="shuffleBtn" class="icon-button" type="button" title="换一组">↻</button>
+          </div>
+
+          <div class="word-card">
+            <button id="speakBtn" class="speak-orb" type="button" aria-label="播放单词发音">
+              <span>▶</span>
+            </button>
+            <div class="word-main">
+              <p id="wordText" class="word-text">cat</p>
+              <p id="wordSound" class="sound-text">/k/ /a/ /t/</p>
+            </div>
+            <div id="wordMeaning" class="meaning-pill">猫</div>
+          </div>
+
+          <div class="split-grid">
+            <section class="activity-block" aria-label="声音选择">
+              <div class="activity-title">
+                <span>1</span>
+                <h3>选出关键音</h3>
+              </div>
+              <div id="soundChoices" class="choice-grid"></div>
+            </section>
+
+            <section class="activity-block" aria-label="拼写练习">
+              <div class="activity-title">
+                <span>2</span>
+                <h3>拖进拼写槽</h3>
+              </div>
+              <div id="spellSlots" class="spell-slots"></div>
+              <div id="letterBank" class="letter-bank"></div>
+            </section>
+          </div>
+
+          <div class="action-row">
+            <button id="checkBtn" class="primary-button" type="button">检查咒语</button>
+            <button id="nextBtn" class="ghost-button" type="button">下一张</button>
+            <p id="feedback" class="feedback">先听一遍，再找声音。</p>
+          </div>
+        </section>
+
+        <aside class="spellbook" aria-label="单词书">
+          <div class="spellbook-head">
+            <h2>今日单词书</h2>
+            <button id="resetBtn" class="text-button" type="button">清零</button>
+          </div>
+          <div id="wordList" class="word-list"></div>
+        </aside>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
