@@ -45,6 +45,44 @@ const lessons = {
   }
 };
 
+function cleanSpell(word) {
+  return word.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function makeVocabItems(items, label) {
+  const groups = [...new Set(items.map((item) => item.group))];
+  return items.map((item, index) => {
+    const otherGroups = groups.filter((group) => group !== item.group);
+    const choices = [item.group, ...otherGroups.slice(index % Math.max(1, otherGroups.length)).concat(otherGroups).slice(0, 2)];
+    const spell = cleanSpell(item.word);
+    return {
+      word: item.word,
+      zh: item.zh,
+      sounds: `${label} · ${item.group}`,
+      key: item.group,
+      choices,
+      letters: spell.split(""),
+      spell
+    };
+  });
+}
+
+if (window.EXTRA_WORD_BANKS) {
+  lessons.sight220 = {
+    kicker: "220高频词",
+    title: "小学阅读常见词",
+    keyLabel: "词组",
+    words: makeVocabItems(window.EXTRA_WORD_BANKS.sight220, "高频词")
+  };
+
+  lessons.ket = {
+    kicker: "KET核心词汇",
+    title: "KET/A2常见单词",
+    keyLabel: "词组",
+    words: makeVocabItems(window.EXTRA_WORD_BANKS.ket, "KET")
+  };
+}
+
 const state = {
   lesson: "short",
   index: 0,
@@ -53,6 +91,10 @@ const state = {
   usedLetters: new Set(),
   stars: Number(localStorage.getItem("phonicsStars") || 0)
 };
+
+const audioCache = new Map();
+const audioSprite = window.AUDIO_SPRITE_MAP ? new Audio("./assets/audio-sprite.wav") : null;
+let audioSpriteTimer = null;
 
 const els = {
   stars: document.querySelector("#stars"),
@@ -91,13 +133,32 @@ function saveStars() {
   els.stars.textContent = state.stars;
 }
 
-function speak(text) {
+function fallbackSpeech(text) {
   if (!("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "en-US";
   utterance.rate = 0.78;
   window.speechSynthesis.speak(utterance);
+}
+
+function speak(text) {
+  const word = cleanSpell(text);
+  const range = window.AUDIO_SPRITE_MAP && window.AUDIO_SPRITE_MAP[word];
+  if (audioSprite && range) {
+    clearTimeout(audioSpriteTimer);
+    audioSprite.pause();
+    audioSprite.currentTime = range[0];
+    audioSprite.play().then(() => {
+      audioSpriteTimer = setTimeout(() => audioSprite.pause(), Math.max(80, (range[1] - range[0]) * 1000));
+    }).catch(() => fallbackSpeech(text));
+    return;
+  }
+  const src = `./assets/audio/${word}.wav`;
+  const audio = audioCache.get(word) || new Audio(src);
+  audioCache.set(word, audio);
+  audio.currentTime = 0;
+  audio.play().catch(() => fallbackSpeech(text));
 }
 
 function render() {
@@ -183,7 +244,7 @@ function renderWordList() {
 function checkAnswer() {
   const item = currentWord();
   const soundOk = state.selectedSound === item.key;
-  const spellOk = state.spell.join("") === item.word;
+  const spellOk = state.spell.join("") === (item.spell || item.word);
 
   if (soundOk && spellOk) {
     state.stars += 3;
